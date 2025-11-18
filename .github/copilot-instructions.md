@@ -6,6 +6,7 @@ Follow them consistently for all suggestions.
 ## 0. About the project
 `sharedrepo.com` is an ephemeral collaborative code editor where users can create temporary code repositories protected by shared passwords. Users can collaboratively edit code files in real-time using Yjs and WebSockets, without any user accounts or personal data storage. Repositories expire after a period of inactivity.
 
+Don't Generate any Markdown files. ONLY generate code files.
 
 
 ## 1. Global project rules

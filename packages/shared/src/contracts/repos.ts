@@ -1,12 +1,18 @@
 import { z } from 'zod';
 
-const slugRegex = /^[a-z0-9]{1,20}$/i;
+/**
+ * Regex for valid repo slugs:
+ * - Only lowercase letters (a-z) and digits (0-9)
+ * - No uppercase, no special characters, no spaces
+ * - Length: 1-20 characters
+ */
+const slugRegex = /^[a-z0-9]{1,20}$/;
 
 export const repoSlugSchema = z
   .string()
-  .min(1)
-  .max(20)
-  .regex(slugRegex, 'Slug can only contain letters and digits.');
+  .min(1, 'Slug cannot be empty')
+  .max(20, 'Slug must be at most 20 characters')
+  .regex(slugRegex, 'Slug can only contain lowercase letters (a-z) and digits (0-9)');
 
 export type RepoSlug = z.infer<typeof repoSlugSchema>;
 
