@@ -1,7 +1,7 @@
 import { Kysely, PostgresDialect } from 'kysely';
 import pg from 'pg';
 import { env } from '../config/env.js';
-import type { Database } from '../types/db.js';
+import type { Database } from '@sharedrepo/db';
 
 const { Pool } = pg;
 
