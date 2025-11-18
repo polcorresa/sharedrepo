@@ -2,19 +2,20 @@
   "name": "sharedrepo",
   "private": true,
   "version": "0.1.0",
-  "packageManager": "npm@10.8.1",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "packageManager": "pnpm@9.0.0",
   "scripts": {
-    "build": "npm run build -w shared && npm run build -w server && npm run build -w web",
-    "typecheck": "npm run typecheck -w shared && npm run typecheck -w server && npm run typecheck -w web",
-    "dev:server": "npm run dev -w server",
-    "dev:web": "npm run dev -w web",
+    "build": "pnpm -r --filter=./packages/* --filter=./apps/* run build",
+    "dev": "pnpm -r --parallel --filter=./apps/* run dev",
+    "dev:api": "pnpm --filter=api run dev",
+    "dev:web": "pnpm --filter=web run dev",
     "lint": "eslint --config config/eslint.config.js .",
     "format": "prettier --config config/.prettierrc.json --write .",
-    "format:check": "prettier --config config/.prettierrc.json --check ."
+    "format:check": "prettier --config config/.prettierrc.json --check .",
+    "test:unit": "pnpm -r --filter=./packages/* --filter=./apps/* run test:unit",
+    "test:int": "pnpm -r --filter=./packages/* --filter=./apps/* run test:int",
+    "test:e2e": "pnpm --filter=testing run test:e2e",
+    "typecheck": "pnpm -r --filter=./packages/* --filter=./apps/* run typecheck",
+    "clean": "pnpm -r run clean && rm -rf node_modules"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.0",
