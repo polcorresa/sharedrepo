@@ -89,6 +89,16 @@ Type-safe data access layer with:
 
 See `REPOSITORIES.md` for complete documentation.
 
+## Transaction Helpers
+
+Atomic operations for complex tree modifications:
+- **withTransaction** - Execute any function in a transaction
+- **File Operations** - Create, move, rename, delete with content
+- **Folder Operations** - Create, move, rename, delete with contents
+- **Batch Operations** - Create, move, rename multiple files atomically
+
+See `TRANSACTION_HELPERS.md` for complete guide.
+
 ## Schema
 
 See `src/types.ts` for complete type definitions.

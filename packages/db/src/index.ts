@@ -39,3 +39,22 @@ export {
   isExtensionSupported,
 } from './utils/language-mapping.js';
 export { hashIp } from './utils/ip-hash.js';
+
+// Transaction Helpers
+export {
+  withTransaction,
+  moveFileToFolder,
+  moveFolderToParent,
+  deleteFolderWithContents,
+  deleteFileWithContent,
+  renameFolderSafely,
+  renameFileSafely,
+  createFileWithContent,
+  createFolderWithInitialContent,
+  duplicateFile,
+  batchCreateFiles,
+  batchMoveFiles,
+  batchRenameFiles,
+  updateFileContentSafely,
+} from './utils/transaction-helpers.js';
+export type { TreeOperationContext } from './utils/transaction-helpers.js';
