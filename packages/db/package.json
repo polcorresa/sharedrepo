@@ -1,0 +1,31 @@
+{
+  "name": "@sharedrepo/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./types": "./src/types.ts",
+    "./client": "./src/client.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "migrate": "tsx src/migrations/migrate.ts",
+    "migrate:latest": "tsx src/migrations/migrate.ts latest",
+    "migrate:down": "tsx src/migrations/migrate.ts down",
+    "clean": "rm -rf dist .tsbuildinfo"
+  },
+  "dependencies": {
+    "kysely": "^0.27.3",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "@types/pg": "^8.11.6",
+    "dotenv": "^16.4.5",
+    "tsx": "^4.7.1",
+    "typescript": "^5.6.2"
+  }
+}
