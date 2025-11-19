@@ -290,6 +290,22 @@ export class TreeService {
   }
 
   /**
+   * Get file content
+   */
+  async getFileContent(id: number): Promise<{ text: string }> {
+    const content = await this.fileContentRepo.getByFileId(id);
+    if (!content) {
+      // If file exists but no content record, return empty string
+      // But we ensure content record on creation.
+      // Check if file exists first?
+      const file = await this.fileRepo.findById(id);
+      if (!file) throw new NotFoundError(`File with id ${id} not found`);
+      return { text: '' };
+    }
+    return { text: content.text };
+  }
+
+  /**
    * Map database folder to API folder node
    */
   private mapToFolderNode(folder: {

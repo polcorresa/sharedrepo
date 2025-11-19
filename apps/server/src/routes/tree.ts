@@ -306,4 +306,33 @@ export const registerTreeRoutes = (app: FastifyInstance<any, any, any, any>) => 
       return reply.send(file);
     }
   );
+
+  /**
+   * GET /api/repos/:slug/files/:id/content
+   * Get file content
+   */
+  server.get(
+    '/api/repos/:slug/files/:id/content',
+    {
+      preHandler: async (request, reply) => {
+        await app.verifyRepoSlug(request, request.params.slug);
+      },
+      schema: {
+        params: z.object({
+          slug: repoSlugSchema,
+          id: z.string(),
+        }),
+        response: {
+          200: z.object({
+            text: z.string(),
+          }),
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const content = await treeService.getFileContent(Number(id));
+      return reply.send(content);
+    }
+  );
 };

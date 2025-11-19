@@ -1,62 +1,54 @@
 import { useState } from 'react';
 import { useParams } from '@tanstack/react-router';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../lib/api';
 import { RepoEditor } from '../components/RepoEditor';
-import type { RepoStatusResponse, RepoMetadata } from '@sharedrepo/shared';
+import { useRepoStatus } from '../hooks/useRepoStatus';
+import { useRepoAuth } from '../hooks/useRepoAuth';
 
 export const RepoGate = () => {
   const { slug } = useParams({ from: '/$slug' });
-  const queryClient = useQueryClient();
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
   // 1. Check repo status
-  const { data: status, isLoading: isLoadingStatus } = useQuery({
-    queryKey: ['repo', slug, 'status'],
-    queryFn: () => api.get<RepoStatusResponse>(`/api/repos/${slug}/status`),
-  });
+  const { data: status, isLoading: isLoadingStatus, error: statusError } = useRepoStatus(slug);
 
-  // 2. Try to fetch metadata (check if already authenticated)
-  const { data: metadata, isLoading: isLoadingMetadata, refetch: refetchMetadata } = useQuery({
-    queryKey: ['repo', slug, 'metadata'],
-    queryFn: () => api.get<RepoMetadata>(`/api/repos/${slug}`),
-    retry: false,
-    enabled: !!status, // Only fetch if status is known
-  });
+  // 2. Check auth / handle actions
+  const { 
+    metadata, 
+    isLoading: isLoadingAuth, 
+    createRepo, 
+    loginRepo 
+  } = useRepoAuth(slug, !!status);
 
-  // Create Repo Mutation
-  const createRepo = useMutation({
-    mutationFn: () => api.post<RepoMetadata>('/api/repos', { slug, password }),
-    onSuccess: (data) => {
-      queryClient.setQueryData(['repo', slug, 'metadata'], data);
-      refetchMetadata();
-    },
-    onError: (err: any) => setError(err.message),
-  });
-
-  // Login Mutation
-  const loginRepo = useMutation({
-    mutationFn: () => api.post<RepoMetadata>(`/api/repos/${slug}/login`, { password }),
-    onSuccess: (data) => {
-      queryClient.setQueryData(['repo', slug, 'metadata'], data);
-      refetchMetadata();
-    },
-    onError: (err: any) => setError(err.message),
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    if (status?.state === 'available') {
-      createRepo.mutate();
-    } else {
-      loginRepo.mutate();
+    setFormError(null);
+    
+    try {
+      if (status?.state === 'available') {
+        await createRepo.mutateAsync(password);
+      } else {
+        await loginRepo.mutateAsync(password);
+      }
+    } catch (err: any) {
+      setFormError(err.message || 'An error occurred');
     }
   };
 
-  if (isLoadingStatus || (status && isLoadingMetadata)) {
+  if (isLoadingStatus || (status && isLoadingAuth)) {
     return <div className="loading">Loading...</div>;
+  }
+
+  if (statusError) {
+    return (
+      <main className="repo-gate">
+        <div className="gate-card error">
+          <h1>Error</h1>
+          <p>{(statusError as Error).message || 'Failed to load repo status'}</p>
+          <a href="/">Go Home</a>
+        </div>
+      </main>
+    );
   }
 
   // If we have metadata, we are authenticated
@@ -93,7 +85,7 @@ export const RepoGate = () => {
             required
             autoFocus
           />
-          {error && <p className="error">{error}</p>}
+          {formError && <p className="error">{formError}</p>}
           <button type="submit" disabled={createRepo.isPending || loginRepo.isPending}>
             {createRepo.isPending || loginRepo.isPending ? 'Processing...' : (isCreating ? 'Create Repo' : 'Enter')}
           </button>

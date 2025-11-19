@@ -4,6 +4,7 @@ import { TreeView } from './TreeView';
 import { CodeEditor } from './CodeEditor';
 import { env } from '../config/env';
 import { useTheme } from '../contexts/ThemeContext';
+import { useRepoAuth } from '../hooks/useRepoAuth';
 
 interface RepoEditorProps {
   metadata: RepoMetadata;
@@ -12,9 +13,14 @@ interface RepoEditorProps {
 export const RepoEditor = ({ metadata }: RepoEditorProps) => {
   const [activeFile, setActiveFile] = useState<TreeFileNode | null>(null);
   const { theme, toggleTheme } = useTheme();
+  const { logoutRepo } = useRepoAuth(metadata.slug, false);
 
   const handleDownload = () => {
     window.location.href = `${env.apiBase}/api/repos/${metadata.slug}/archive`;
+  };
+
+  const handleLogout = () => {
+    logoutRepo.mutate();
   };
 
   return (
@@ -26,7 +32,7 @@ export const RepoEditor = ({ metadata }: RepoEditorProps) => {
             {theme === 'light' ? '🌙' : '☀️'}
           </button>
           <button onClick={handleDownload}>Download .zip</button>
-          <button>Logout</button>
+          <button onClick={handleLogout}>Logout</button>
         </div>
       </header>
       <div className="editor-layout">
