@@ -3,6 +3,7 @@ import type { RepoMetadata, TreeFileNode } from '@sharedrepo/shared';
 import { TreeView } from './TreeView';
 import { CodeEditor } from './CodeEditor';
 import { env } from '../config/env';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface RepoEditorProps {
   metadata: RepoMetadata;
@@ -10,6 +11,7 @@ interface RepoEditorProps {
 
 export const RepoEditor = ({ metadata }: RepoEditorProps) => {
   const [activeFile, setActiveFile] = useState<TreeFileNode | null>(null);
+  const { theme, toggleTheme } = useTheme();
 
   const handleDownload = () => {
     window.location.href = `${env.apiBase}/api/repos/${metadata.slug}/archive`;
@@ -20,6 +22,9 @@ export const RepoEditor = ({ metadata }: RepoEditorProps) => {
       <header>
         <h1>{metadata.slug}</h1>
         <div className="actions">
+          <button onClick={toggleTheme}>
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
           <button onClick={handleDownload}>Download .zip</button>
           <button>Logout</button>
         </div>
@@ -38,6 +43,7 @@ export const RepoEditor = ({ metadata }: RepoEditorProps) => {
                 fileId={activeFile.id}
                 language={activeFile.languageHint || 'plaintext'}
                 slug={metadata.slug}
+                theme={theme}
               />
             </div>
           ) : (

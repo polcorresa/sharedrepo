@@ -11,9 +11,10 @@ interface CodeEditorProps {
   fileId: string;
   language: string;
   slug: string; // Used for auth context if needed, but token is in cookie
+  theme: 'light' | 'dark';
 }
 
-export const CodeEditor = ({ repoId, fileId, language, slug }: CodeEditorProps) => {
+export const CodeEditor = ({ repoId, fileId, language, slug, theme }: CodeEditorProps) => {
   const [editor, setEditor] = useState<any>(null);
   const [monaco, setMonaco] = useState<any>(null);
   const providerRef = useRef<WebsocketProvider | null>(null);
@@ -113,7 +114,7 @@ export const CodeEditor = ({ repoId, fileId, language, slug }: CodeEditorProps) 
       <Editor
         height="100%"
         language={language || 'plaintext'}
-        theme="vs-dark"
+        theme={theme === 'dark' ? 'vs-dark' : 'light'}
         onMount={handleEditorDidMount}
         options={{
           minimap: { enabled: false },

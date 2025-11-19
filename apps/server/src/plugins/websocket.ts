@@ -7,6 +7,7 @@ import { logger } from '../logs/logger.js';
 import { createVerifier } from 'fast-jwt';
 import { env } from '../config/env.js';
 import type { RepoTokenPayload } from '@sharedrepo/shared';
+import { metrics } from './metrics.js';
 
 const verifyToken = createVerifier({
   key: env.JWT_SECRET,
@@ -71,7 +72,12 @@ const websocketPlugin: FastifyPluginAsync = async (app) => {
       }
 
       // 3. Hand off to y-websocket
+      metrics.activeWebsocketConnections.inc();
       setupWSConnection(connection.socket, req.raw);
+      
+      connection.socket.on('close', () => {
+        metrics.activeWebsocketConnections.dec();
+      });
     });
 
     // Tree Events WebSocket Endpoint
@@ -105,6 +111,8 @@ const websocketPlugin: FastifyPluginAsync = async (app) => {
 
       const repoId = Number(payload.repoId);
 
+      metrics.activeWebsocketConnections.inc();
+
       // 2. Subscribe to events
       const handler = (event: any) => {
         if (event.repoId === repoId) {
@@ -119,6 +127,7 @@ const websocketPlugin: FastifyPluginAsync = async (app) => {
       // 3. Cleanup
       connection.socket.on('close', () => {
         treeEventService.off('tree-update', handler);
+        metrics.activeWebsocketConnections.dec();
       });
       
       // Send a ping every 30s to keep alive
