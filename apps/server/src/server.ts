@@ -10,6 +10,7 @@ import authPlugin from './plugins/auth.js';
 import metricsPlugin from './plugins/metrics.js';
 import jobsPlugin from './plugins/jobs.js';
 import websocketPlugin from './plugins/websocket.js';
+import loggingPlugin from './plugins/logging.js';
 import { registerHealthRoutes } from './routes/health.js';
 import { registerRepoRoutes } from './routes/repos.js';
 import { registerTreeRoutes } from './routes/tree.js';
@@ -35,6 +36,7 @@ const buildServer = () => {
   app.register(fastifySensible);
 
   // Custom plugins
+  app.register(loggingPlugin); // Register early to ensure ip_hash is available
   app.register(metricsPlugin);
   app.register(zodProviderPlugin);
   app.register(errorHandlerPlugin);

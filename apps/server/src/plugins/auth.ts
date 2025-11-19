@@ -44,6 +44,9 @@ const authPlugin: FastifyPluginAsync = async (app) => {
 
       // Attach payload to request for route handlers
       request.repoToken = payload;
+
+      // Add repo_id to logger
+      (request.log as any).setBindings({ repo_id: payload.repoId });
     } catch (error) {
       throw app.httpErrors.unauthorized('Invalid or expired access token');
     }
