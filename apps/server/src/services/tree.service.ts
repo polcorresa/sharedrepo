@@ -411,7 +411,7 @@ export class TreeService {
     folder_id: number;
     name: string;
     language_hint: string | null;
-    size_bytes: number;
+    size_bytes: number | string;
     version: number;
     created_at: Date;
     updated_at: Date;
@@ -423,7 +423,7 @@ export class TreeService {
       parentFolderId: String(file.folder_id),
       name: file.name,
       languageHint: file.language_hint,
-      sizeBytes: file.size_bytes,
+      sizeBytes: Number(file.size_bytes),
       version: file.version,
       createdAt: file.created_at.toISOString(),
       updatedAt: file.updated_at.toISOString(),

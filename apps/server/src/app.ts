@@ -3,7 +3,7 @@ import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
 import fastifySensible from '@fastify/sensible';
 import { env } from './config/env.js';
-import { logger } from './logs/logger.js';
+import { getLoggerConfig } from './logs/logger.js';
 import zodProviderPlugin from './plugins/zod-provider.js';
 import errorHandlerPlugin from './plugins/error-handler.js';
 import authPlugin from './plugins/auth.js';
@@ -18,7 +18,7 @@ import { registerAdminRoutes } from './routes/admin.js';
 
 export const buildServer = () => {
   const app = Fastify({
-    logger,
+    logger: getLoggerConfig(),
     trustProxy: true
   });
 

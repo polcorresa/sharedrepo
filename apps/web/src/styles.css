@@ -54,20 +54,27 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
+/* Removed @media (prefers-color-scheme: light) block as it conflicts with manual theme switching */
 
 /* Layout */
+:root[data-theme="light"] {
+  color: #213547;
+  background-color: #ffffff;
+}
+
+:root[data-theme="light"] a:hover {
+  color: #747bff;
+}
+
+:root[data-theme="light"] button {
+  background-color: #f9f9f9;
+}
+
+:root[data-theme="dark"] {
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+}
+
 #root {
   width: 100%;
   height: 100vh;

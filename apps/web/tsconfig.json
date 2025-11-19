@@ -5,7 +5,10 @@
     "moduleResolution": "Bundler",
     "types": ["vite/client"],
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "paths": {
+      "@sharedrepo/shared": ["../../packages/shared/src/index.ts"]
+    }
   },
   "include": ["src"],
   "exclude": ["dist", "node_modules"]

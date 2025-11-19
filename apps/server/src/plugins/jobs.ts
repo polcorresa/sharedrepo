@@ -28,14 +28,14 @@ const jobsPlugin: FastifyPluginAsync = async (app) => {
   const metricsIntervalId = setInterval(async () => {
     try {
       const count = await repoRepo.countActive();
-      metrics.activeReposCount.set(count);
+      metrics.activeReposCount.set(Number(count));
     } catch (err) {
       app.log.error(err, 'Failed to update active repos metric');
     }
   }, METRICS_INTERVAL_MS);
 
   // Initial metric update
-  repoRepo.countActive().then(count => metrics.activeReposCount.set(count)).catch(err => app.log.error(err));
+  repoRepo.countActive().then(count => metrics.activeReposCount.set(Number(count))).catch(err => app.log.error(err));
 
   // Clean up on close
   app.addHook('onClose', (instance, done) => {

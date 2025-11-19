@@ -19,9 +19,11 @@ export const useTree = (slug: string) => {
   const queryClient = useQueryClient();
   const { addToast } = useToast();
   const queryKey = ['repo', slug, 'tree'];
+  const mutationInProgressRef = { current: false };
 
   // Helper for error handling
   const handleError = (error: any, action: string) => {
+    console.error(`${action} error:`, error);
     if (error.status === 409) {
       addToast({
         type: 'warning',
@@ -29,6 +31,12 @@ export const useTree = (slug: string) => {
         message: 'The tree has changed. Refreshing...',
       });
       queryClient.invalidateQueries({ queryKey });
+    } else if (error.status === 500) {
+      addToast({
+        type: 'error',
+        title: `${action} Failed`,
+        message: 'Server error. Please check the console for details.',
+      });
     } else {
       addToast({
         type: 'error',
@@ -52,13 +60,33 @@ export const useTree = (slug: string) => {
     const wsUrl = `${env.wsBase}/ws/repo/${slug}/tree`;
     
     const ws = new WebSocket(wsUrl);
+    let isConnected = false;
+
+    ws.onopen = () => {
+      console.log('Tree WebSocket connected');
+      isConnected = true;
+    };
+
+    ws.onerror = (error) => {
+      console.error('Tree WebSocket error:', error);
+      isConnected = false;
+    };
+
+    ws.onclose = (event) => {
+      console.log('Tree WebSocket closed:', event.code, event.reason);
+      isConnected = false;
+    };
 
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data) as TreeEvent;
-        // For now, simplest strategy is to invalidate queries to refetch tree
-        // This ensures we have the correct state without complex client-side patching
-        queryClient.invalidateQueries({ queryKey });
+        console.log('Tree event received:', data);
+        // Don't invalidate if a mutation is in progress
+        if (!mutationInProgressRef.current) {
+          queryClient.invalidateQueries({ queryKey });
+        } else {
+          console.log('Skipping tree invalidation - mutation in progress');
+        }
       } catch (err) {
         console.error('Failed to parse tree event', err);
       }
@@ -73,16 +101,40 @@ export const useTree = (slug: string) => {
   const createFolder = useMutation({
     mutationFn: (data: { parentFolderId: string | null; name: string }) =>
       api.post<TreeFolderNode>(`/api/repos/${slug}/folders`, data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
-    onError: (err) => handleError(err, 'Create Folder'),
+    onMutate: () => {
+      mutationInProgressRef.current = true;
+    },
+    onSuccess: (data) => {
+      console.log('Folder created successfully:', data);
+      queryClient.invalidateQueries({ queryKey });
+      setTimeout(() => {
+        mutationInProgressRef.current = false;
+      }, 200);
+    },
+    onError: (err) => {
+      mutationInProgressRef.current = false;
+      handleError(err, 'Create Folder');
+    },
   });
 
   // Create File
   const createFile = useMutation({
     mutationFn: (data: { folderId: string; name: string }) =>
       api.post<TreeFileNode>(`/api/repos/${slug}/files`, data),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
-    onError: (err) => handleError(err, 'Create File'),
+    onMutate: () => {
+      mutationInProgressRef.current = true;
+    },
+    onSuccess: (data) => {
+      console.log('File created successfully:', data);
+      queryClient.invalidateQueries({ queryKey });
+      setTimeout(() => {
+        mutationInProgressRef.current = false;
+      }, 200);
+    },
+    onError: (err) => {
+      mutationInProgressRef.current = false;
+      handleError(err, 'Create File');
+    },
   });
 
   // Rename Folder

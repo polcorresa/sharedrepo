@@ -10,8 +10,8 @@ export const treeNodeBaseSchema = z.object({
   parentFolderId: z.string().nullable(),
   name: z.string().min(1),
   version: z.number().int().nonnegative(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime()
+  createdAt: z.string(),
+  updatedAt: z.string()
 });
 
 export const treeFolderSchema = treeNodeBaseSchema.extend({

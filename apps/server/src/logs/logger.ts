@@ -43,7 +43,7 @@ const baseConfig: pino.LoggerOptions = {
  * Production logger configuration
  * Outputs JSON for log aggregation services
  */
-const productionConfig: pino.LoggerOptions = {
+export const productionConfig: pino.LoggerOptions = {
   ...baseConfig,
   // Production: structured JSON output
   formatters: {
@@ -55,7 +55,7 @@ const productionConfig: pino.LoggerOptions = {
  * Development logger configuration
  * Uses pino-pretty for human-readable output
  */
-const developmentConfig: pino.LoggerOptions = {
+export const developmentConfig: pino.LoggerOptions = {
   ...baseConfig,
   // Development: pretty-printed output
   transport: {
@@ -75,10 +75,15 @@ const developmentConfig: pino.LoggerOptions = {
 };
 
 /**
+ * Get the logger configuration based on the environment
+ */
+export const getLoggerConfig = () => isProduction ? productionConfig : developmentConfig;
+
+/**
  * Main application logger
  * Automatically configured based on NODE_ENV
  */
-export const logger = pino(isProduction ? productionConfig : developmentConfig);
+export const logger = pino(getLoggerConfig());
 
 /**
  * Create a child logger with additional context

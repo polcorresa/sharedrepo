@@ -15,16 +15,12 @@ const verifyToken = createVerifier({
 });
 
 const websocketPlugin: FastifyPluginAsync = async (app) => {
-  app.register(fastifyWebsocket);
+  await app.register(fastifyWebsocket);
 
-  app.register(async function (app) {
-    // Yjs WebSocket Endpoint
-    app.get('/ws/yjs', { websocket: true }, (connection, req) => {
-      // 1. Authenticate
-      // Token can be in query param or cookie. y-websocket client usually supports query params?
-      // Or we can parse cookie from req.headers.cookie
-      // Let's try to get token from cookie first, then query param.
-      let token = req.cookies.repo_token;
+  // Yjs WebSocket Endpoint
+  app.get('/ws/yjs', { websocket: true }, (socket, req) => {
+    // 1. Authenticate
+    let token = req.cookies.repo_token;
       
       // If not in cookie, check query param (e.g. ?token=...)
       if (!token) {
@@ -32,18 +28,18 @@ const websocketPlugin: FastifyPluginAsync = async (app) => {
         token = query.token;
       }
 
-      if (!token) {
-        connection.socket.close(1008, 'Unauthorized: No token provided');
-        return;
-      }
+    if (!token) {
+      socket.close(1008, 'Unauthorized: No token provided');
+      return;
+    }
 
-      let payload: RepoTokenPayload;
-      try {
-        payload = verifyToken(token) as RepoTokenPayload;
-      } catch (err) {
-        connection.socket.close(1008, 'Unauthorized: Invalid token');
-        return;
-      }
+    let payload: RepoTokenPayload;
+    try {
+      payload = verifyToken(token) as RepoTokenPayload;
+    } catch (err) {
+      socket.close(1008, 'Unauthorized: Invalid token');
+      return;
+    }
 
       // 2. Validate Room Access
       // y-websocket uses req.url to determine room name.
@@ -62,85 +58,84 @@ const websocketPlugin: FastifyPluginAsync = async (app) => {
       // If we use WebsocketProvider('ws://host/ws/yjs', 'roomname'), it connects to ws://host/ws/yjs/roomname
       // So req.url will be /ws/yjs/roomname
       
-      if (roomName && roomName.startsWith('repo:')) {
-        const parts = roomName.split(':');
-        const roomRepoId = parts[1];
-        if (roomRepoId !== payload.repoId) {
-           connection.socket.close(1008, 'Forbidden: Access denied to this repo');
-           return;
-        }
+    if (roomName && roomName.startsWith('repo:')) {
+      const parts = roomName.split(':');
+      const roomRepoId = parts[1];
+      if (roomRepoId !== payload.repoId) {
+         socket.close(1008, 'Forbidden: Access denied to this repo');
+         return;
       }
+    }
 
-      // 3. Hand off to y-websocket
-      metrics.activeWebsocketConnections.inc();
-      setupWSConnection(connection.socket, req.raw);
-      
-      connection.socket.on('close', () => {
-        metrics.activeWebsocketConnections.dec();
-      });
+    // 3. Hand off to y-websocket
+    metrics.activeWebsocketConnections.inc();
+    setupWSConnection(socket, req.raw);
+    
+    socket.on('close', () => {
+      metrics.activeWebsocketConnections.dec();
     });
+  });
 
-    // Tree Events WebSocket Endpoint
-    app.get('/ws/repo/:slug/tree', { websocket: true }, (connection, req) => {
-      const { slug } = req.params as { slug: string };
+  // Tree Events WebSocket Endpoint
+  app.get('/ws/repo/:slug/tree', { websocket: true }, (socket, req) => {
+    const { slug } = req.params as { slug: string };
 
-      // 1. Authenticate
-      let token = req.cookies.repo_token;
-      if (!token) {
-        const query = req.query as any;
-        token = query.token;
-      }
+    // 1. Authenticate
+    let token = req.cookies.repo_token;
+    if (!token) {
+      const query = req.query as any;
+      token = query.token;
+    }
 
-      if (!token) {
-        connection.socket.close(1008, 'Unauthorized');
-        return;
-      }
+    if (!token) {
+      socket.close(1008, 'Unauthorized');
+      return;
+    }
 
-      let payload: RepoTokenPayload;
-      try {
-        payload = verifyToken(token) as RepoTokenPayload;
-      } catch (err) {
-        connection.socket.close(1008, 'Unauthorized');
-        return;
-      }
+    let payload: RepoTokenPayload;
+    try {
+      payload = verifyToken(token) as RepoTokenPayload;
+    } catch (err) {
+      socket.close(1008, 'Unauthorized');
+      return;
+    }
 
-      if (payload.slug !== slug) {
-        connection.socket.close(1008, 'Forbidden');
-        return;
-      }
+    if (payload.slug !== slug) {
+      socket.close(1008, 'Forbidden');
+      return;
+    }
 
-      const repoId = Number(payload.repoId);
+    const repoId = Number(payload.repoId);
 
-      metrics.activeWebsocketConnections.inc();
+    metrics.activeWebsocketConnections.inc();
 
-      // 2. Subscribe to events
-      const handler = (event: any) => {
-        if (event.repoId === repoId) {
-          if (connection.socket.readyState === connection.socket.OPEN) {
-            connection.socket.send(JSON.stringify(event));
-          }
+    // 2. Subscribe to events
+    const handler = (event: any) => {
+      if (event.repoId === repoId) {
+        if (socket.readyState === socket.OPEN) {
+          socket.send(JSON.stringify(event));
         }
-      };
+      }
+    };
 
-      treeEventService.on('tree-update', handler);
+    treeEventService.on('tree-update', handler);
 
-      // 3. Cleanup
-      connection.socket.on('close', () => {
-        treeEventService.off('tree-update', handler);
-        metrics.activeWebsocketConnections.dec();
-      });
-      
-      // Send a ping every 30s to keep alive
-      const pingInterval = setInterval(() => {
-        if (connection.socket.readyState === connection.socket.OPEN) {
-          connection.socket.ping();
-        } else {
-          clearInterval(pingInterval);
-        }
-      }, 30000);
-      
-      connection.socket.on('close', () => clearInterval(pingInterval));
+    // 3. Cleanup
+    socket.on('close', () => {
+      treeEventService.off('tree-update', handler);
+      metrics.activeWebsocketConnections.dec();
     });
+    
+    // Send a ping every 30s to keep alive
+    const pingInterval = setInterval(() => {
+      if (socket.readyState === socket.OPEN) {
+        socket.ping();
+      } else {
+        clearInterval(pingInterval);
+      }
+    }, 30000);
+    
+    socket.on('close', () => clearInterval(pingInterval));
   });
 };
 

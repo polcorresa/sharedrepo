@@ -263,7 +263,7 @@ export class RepoService {
     slug: string;
     created_at: Date;
     last_accessed_at: Date;
-    approx_size_bytes: number | null;
+    approx_size_bytes: number | null | string;
   }): RepoMetadata {
     return {
       id: String(repo.id),
@@ -271,7 +271,7 @@ export class RepoService {
       createdAt: repo.created_at.toISOString(),
       lastAccessedAt: repo.last_accessed_at.toISOString(),
       expiresAt: getExpiryDate(repo.last_accessed_at).toISOString(),
-      approxSizeBytes: repo.approx_size_bytes,
+      approxSizeBytes: repo.approx_size_bytes ? Number(repo.approx_size_bytes) : 0,
     };
   }
 }

@@ -24,7 +24,7 @@
     "y-monaco": "^0.1.6",
     "y-websocket": "^1.5.4",
     "yjs": "^13.6.15",
-    "zod": "^3.23.8"
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
