@@ -2,12 +2,22 @@ import fastifyPlugin from 'fastify-plugin';
 import type { FastifyPluginAsync } from 'fastify';
 import fastifyWebsocket from '@fastify/websocket';
 import { setupWSConnection } from 'y-websocket/bin/utils';
+import { LeveldbPersistence } from 'y-leveldb';
 import { treeEventService } from '../services/tree-events.service.js';
 import { logger } from '../logs/logger.js';
 import { createVerifier } from 'fast-jwt';
 import { env } from '../config/env.js';
 import type { RepoTokenPayload } from '@sharedrepo/shared';
 import { metrics } from './metrics.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Initialize Yjs persistence
+const persistenceDir = path.join(__dirname, '../../.yjs-storage');
+const persistence = new LeveldbPersistence(persistenceDir);
 
 const verifyToken = createVerifier({
   key: env.JWT_SECRET,
@@ -67,9 +77,9 @@ const websocketPlugin: FastifyPluginAsync = async (app) => {
       }
     }
 
-    // 3. Hand off to y-websocket
+    // 3. Hand off to y-websocket with persistence
     metrics.activeWebsocketConnections.inc();
-    setupWSConnection(socket, req.raw);
+    setupWSConnection(socket, req.raw, { persistence });
     
     socket.on('close', () => {
       metrics.activeWebsocketConnections.dec();

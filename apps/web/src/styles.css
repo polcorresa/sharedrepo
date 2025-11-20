@@ -1,230 +1,635 @@
+/* ============================================
+   VS Code-Inspired Theme Variables
+   ============================================ */
+
+:root[data-theme="light"] {
+  /* Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f3f3f3;
+  --bg-hover: #e8e8e8;
+  --bg-active: #e0e0e0;
+  --border-color: #e5e5e5;
+  --text-primary: #333333;
+  --text-secondary: #6c6c6c;
+  --text-muted: #999999;
+  --accent-color: #007acc;
+  --accent-hover: #005a9e;
+  --danger-color: #d32f2f;
+  --success-color: #43a047;
+  --warning-color: #f57c00;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+  
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}
+
+:root[data-theme="dark"] {
+  /* Colors */
+  --bg-primary: #1e1e1e;
+  --bg-secondary: #252526;
+  --bg-hover: #2a2d2e;
+  --bg-active: #37373d;
+  --border-color: #3e3e42;
+  --text-primary: #cccccc;
+  --text-secondary: #9d9d9d;
+  --text-muted: #6c6c6c;
+  --accent-color: #0e639c;
+  --accent-hover: #1177bb;
+  --danger-color: #f44336;
+  --success-color: #66bb6a;
+  --warning-color: #ff9800;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.5);
+  
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
+  
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-/* Removed @media (prefers-color-scheme: light) block as it conflicts with manual theme switching */
-
-/* Layout */
-:root[data-theme="light"] {
-  color: #213547;
-  background-color: #ffffff;
-}
-
-:root[data-theme="light"] a:hover {
-  color: #747bff;
-}
-
-:root[data-theme="light"] button {
-  background-color: #f9f9f9;
-}
-
-:root[data-theme="dark"] {
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  overflow: hidden;
 }
 
 #root {
   width: 100%;
   height: 100vh;
+  overflow: hidden;
 }
+
+/* ============================================
+   Repo Editor Layout
+   ============================================ */
 
 .repo-editor {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
-.repo-editor header {
+/* Header */
+.editor-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 1rem;
-  border-bottom: 1px solid #ccc;
-  height: 50px;
+  padding: 8px 16px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  height: 48px;
+  flex-shrink: 0;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.repo-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.repo-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.repo-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1;
+  margin: 0;
+}
+
+.repo-subtitle {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.icon-button {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-button:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-color);
+}
+
+.action-button {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.action-button:hover {
+  background: var(--accent-hover);
+}
+
+.action-button.secondary {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.action-button.secondary:hover {
+  background: var(--bg-active);
+}
+
+.button-icon {
+  font-size: 14px;
+}
+
+/* Editor Layout */
 .editor-layout {
   display: flex;
   flex: 1;
   overflow: hidden;
+  min-height: 0;
 }
 
 .sidebar {
-  width: 250px;
-  border-right: 1px solid #ccc;
+  width: 280px;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
   overflow-y: auto;
-  padding: 0.5rem;
+  overflow-x: hidden;
+  flex-shrink: 0;
 }
 
 .content {
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
 }
 
-.editor-container {
-  flex: 1;
+/* ============================================
+   Tree View (Sidebar)
+   ============================================ */
+
+.tree-view {
+  height: 100%;
   display: flex;
   flex-direction: column;
+  user-select: none;
 }
 
-.file-tab {
-  padding: 0.5rem;
-  background: #f0f0f0;
-  border-bottom: 1px solid #ccc;
-}
-
-.empty-state {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  color: #888;
-}
-
-/* Tree View */
-.tree-node {
-  padding: 2px 0;
+.tree-header {
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-secondary);
 }
 
 .tree-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.tree-item {
   display: flex;
   align-items: center;
+  padding: 4px 12px;
   cursor: pointer;
-  padding: 2px 4px;
+  transition: background 0.1s ease;
+  font-size: 13px;
+  color: var(--text-primary);
+  border-left: 2px solid transparent;
 }
 
-.tree-content:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+.tree-item:hover {
+  background: var(--bg-hover);
 }
 
-.tree-content.selected {
-  background-color: rgba(0, 122, 204, 0.1);
+.tree-item.active {
+  background: var(--bg-active);
+  border-left-color: var(--accent-color);
 }
 
-.tree-children {
-  margin-left: 16px;
-  border-left: 1px solid #eee;
-}
-
-.folder-icon, .file-icon {
+.tree-item-icon {
   margin-right: 6px;
-  font-size: 14px;
+  font-size: 16px;
+  flex-shrink: 0;
+  line-height: 1;
 }
 
-.actions {
-  display: flex;
-  gap: 8px;
+.tree-item-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+.tree-item.folder {
+  font-weight: 500;
+}
+
+.tree-loading,
+.tree-error,
+.tree-empty {
+  padding: 16px 12px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  text-align: center;
+}
+
+.tree-empty p {
+  margin: 8px 0;
+}
+
+.tree-empty-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ============================================
+   Context Menu
+   ============================================ */
 
 .context-menu {
   position: fixed;
-  background: white;
-  border: 1px solid #ccc;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  z-index: 1000;
-  min-width: 150px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  box-shadow: var(--shadow-lg);
+  z-index: 10000;
+  min-width: 180px;
+  padding: 4px 0;
+  overflow: hidden;
 }
 
 .context-menu-item {
   padding: 8px 12px;
   cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.1s ease;
+  color: var(--text-primary);
 }
 
-.context-menu-item:hover {
-  background-color: #f0f0f0;
+.context-menu-item:hover:not(.disabled) {
+  background: var(--bg-hover);
+}
+
+.context-menu-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .context-menu-item.danger {
-  color: red;
+  color: var(--danger-color);
 }
 
-/* Repo Gate */
+.context-menu-icon {
+  font-size: 14px;
+  width: 16px;
+  display: inline-block;
+  text-align: center;
+}
+
+/* ============================================
+   Editor Content Area
+   ============================================ */
+
+.editor-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.file-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.file-tab-icon {
+  font-size: 14px;
+}
+
+.file-tab-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.file-tab-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 16px;
+  line-height: 1;
+  border-radius: 3px;
+  transition: all 0.1s ease;
+}
+
+.file-tab-close:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Code Editor Wrapper */
+.code-editor-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.editor-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 16px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 12px;
+}
+
+.editor-toolbar-left,
+.editor-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toolbar-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.toolbar-checkbox input {
+  cursor: pointer;
+}
+
+.save-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success-color);
+}
+
+.save-status.unsaved .status-dot {
+  background: var(--warning-color);
+}
+
+.save-button {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.save-button:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.save-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+
+.monaco-container {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background: var(--bg-primary);
+}
+
+.empty-state-content {
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.empty-state-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state-content h2 {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.empty-state-content p {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.empty-state-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* ============================================
+   Scrollbars
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-active);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ============================================
+   Repo Gate
+   ============================================ */
+
 .repo-gate {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  background: var(--bg-secondary);
 }
 
 .gate-card {
-  padding: 2rem;
-  border: 1px solid #ccc;
+  padding: 32px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
+  box-shadow: var(--shadow-lg);
   text-align: center;
   max-width: 400px;
   width: 100%;
 }
 
+.gate-card h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.gate-card p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
 .gate-card input {
   width: 100%;
-  padding: 0.5rem;
-  margin: 1rem 0;
+  padding: 10px 12px;
+  margin: 12px 0;
   box-sizing: border-box;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.gate-card input:focus {
+  outline: none;
+  border-color: var(--accent-color);
 }
 
 .gate-card button {
   width: 100%;
+  padding: 10px;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.gate-card button:hover {
+  background: var(--accent-hover);
 }
 
 .error {
-  color: red;
-  margin-top: 0.5rem;
+  color: var(--danger-color);
+  margin-top: 12px;
+  font-size: 13px;
 }
 
-/* Toasts */
+/* ============================================
+   Toasts
+   ============================================ */
+
 .toast-container {
   position: fixed;
   bottom: 20px;
@@ -239,29 +644,30 @@ button:focus-visible {
   min-width: 300px;
   padding: 12px 16px;
   border-radius: 6px;
-  background: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   animation: slideIn 0.3s ease-out;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .toast-success {
-  border-left: 4px solid #4caf50;
+  border-left: 4px solid var(--success-color);
 }
 
 .toast-error {
-  border-left: 4px solid #f44336;
+  border-left: 4px solid var(--danger-color);
 }
 
 .toast-info {
-  border-left: 4px solid #2196f3;
+  border-left: 4px solid var(--accent-color);
 }
 
 .toast-warning {
-  border-left: 4px solid #ff9800;
+  border-left: 4px solid var(--warning-color);
 }
 
 .toast-content {
@@ -275,23 +681,24 @@ button:focus-visible {
 }
 
 .toast-message {
-  font-size: 14px;
-  color: #666;
+  font-size: 13px;
+  color: var(--text-secondary);
 }
 
 .toast-close {
   background: none;
   border: none;
-  color: #999;
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 0;
   margin-left: 12px;
   font-size: 18px;
   line-height: 1;
+  transition: color 0.1s ease;
 }
 
 .toast-close:hover {
-  color: #333;
+  color: var(--text-primary);
 }
 
 @keyframes slideIn {
@@ -305,31 +712,36 @@ button:focus-visible {
   }
 }
 
-/* Error Boundary */
+/* ============================================
+   Error Boundary
+   ============================================ */
+
 .error-boundary {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f5f5f5;
+  background: var(--bg-secondary);
 }
 
 .error-card {
-  background: white;
-  padding: 2rem;
+  background: var(--bg-primary);
+  padding: 32px;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
   text-align: center;
   max-width: 400px;
 }
 
 .error-card h1 {
-  color: #f44336;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
+  color: var(--danger-color);
+  margin-bottom: 16px;
+  font-size: 20px;
 }
 
 .error-card p {
-  margin-bottom: 1.5rem;
-  color: #666;
+  margin-bottom: 24px;
+  color: var(--text-secondary);
+  font-size: 14px;
 }
